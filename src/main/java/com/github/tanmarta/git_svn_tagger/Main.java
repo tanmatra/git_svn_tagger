@@ -2,6 +2,7 @@ package com.github.tanmarta.git_svn_tagger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.jgit.api.Git;
@@ -39,6 +40,8 @@ public class Main
     private final Repository repository;
 
     private final Git git;
+
+    private final List<String> createdTags = new ArrayList<>();
 
     private Main(Repository repository) {
         this.repository = repository;
@@ -80,6 +83,11 @@ public class Main
                 System.out.println("---");
             }
         }
+        if (!createdTags.isEmpty()) {
+            System.out.println("Created tags:   " + String.join(" ", createdTags));
+        } else {
+            System.out.println("No tags created.");
+        }
     }
 
     private void createTag(String tagName, RevCommit commit) {
@@ -89,6 +97,7 @@ public class Main
         tagCommand.setObjectId(commit);
         try {
             final Ref tagRef = tagCommand.call();
+            createdTags.add(tagName);
             System.out.println("Tag created:    " + tagRef);
         } catch (Exception e) {
             System.out.println(e.toString());
